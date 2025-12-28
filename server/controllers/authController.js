@@ -5,10 +5,14 @@ import fs from 'fs';
 const logAuthError = (type, error) => {
     const timestamp = new Date().toISOString();
     const logMsg = `[${timestamp}] ${type}: ${error.message}\n${error.stack}\n\n`;
-    try {
-        fs.appendFileSync('auth-error.log', logMsg);
-    } catch (e) {
-        console.error('Failed to write to auth-error.log');
+
+    // Only write to file in local dev
+    if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+        try {
+            fs.appendFileSync('auth-error.log', logMsg);
+        } catch (e) {
+            // Silently ignore log errors
+        }
     }
     console.error(`[${timestamp}] ${type}:`, error);
 };
@@ -41,8 +45,7 @@ export const signup = async (req, res) => {
         logAuthError('Signup Error', error);
         res.status(500).json({
             message: 'Signup failed',
-            error: error.message,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            error: error.message
         });
     }
 };

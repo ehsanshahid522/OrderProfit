@@ -23,7 +23,14 @@ app.use(express.json());
 // Logging Helper
 const logEvent = (msg) => {
     const timestamp = new Date().toISOString();
-    fs.appendFileSync('db-events.log', `[${timestamp}] ${msg}\n`);
+    // Only write to file in local dev
+    if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+        try {
+            fs.appendFileSync('db-events.log', `[${timestamp}] ${msg}\n`);
+        } catch (e) {
+            // Silently ignore log errors
+        }
+    }
     console.log(`[${timestamp}] ${msg}`);
 };
 
@@ -49,7 +56,6 @@ app.get('/', (req, res) => {
         message: 'OrderProfit API is running...',
         database: states[status],
         uriPrefix: uriRaw.substring(0, 15),
-        uriSuffix: uriRaw.substring(uriRaw.length - 15),
         envLoaded: !!process.env.MONGODB_URI
     });
 });
