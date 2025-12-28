@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 199 89% 48%;
+    --accent: 142 70% 45%;
+    --background: 210 40% 98%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900;
+  }
+}
+
+@layer components {
+  .vibrant-gradient {
+    @apply bg-gradient-to-br from-indigo-600 via-blue-600 to-emerald-500;
+  }
+
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-lg border border-white/20 shadow-xl;
+  }
+
+  .neo-button {
+    @apply relative overflow-hidden transition-all duration-300 active:scale-95;
+  }
+
+  .neo-button::after {
+    content: '';
+    @apply absolute inset-0 bg-white/20 opacity-0 transition-opacity duration-300;
+  }
+
+  .neo-button:hover::after {
+    @apply opacity-100;
+  }
+
+  .stat-card {
+    @apply p-6 rounded-2xl bg-white shadow-sm border border-slate-100 hover:shadow-md transition-all duration-300;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-200;
+  }
+
+  .nav-item-active {
+    @apply bg-indigo-50 text-indigo-600 shadow-sm shadow-indigo-100;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+}
