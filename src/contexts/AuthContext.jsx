@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
             const data = await api.auth.signup({ email, password, businessName });
             localStorage.setItem('token', data.token);
             setUser({
-                id: data.id,
+                id: data._id,
                 email: data.email,
                 businessName: data.businessName,
                 currency: 'USD'
@@ -55,7 +55,7 @@ export function AuthProvider({ children }) {
             const data = await api.auth.signin({ email, password });
             localStorage.setItem('token', data.token);
             setUser({
-                id: data.id,
+                id: data._id,
                 email: data.email,
                 businessName: data.businessName,
                 currency: 'USD'
