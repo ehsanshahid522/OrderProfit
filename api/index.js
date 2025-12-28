@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-// Import routes directly from the server folder
+// Import routes
 import authRoutes from '../server/routes/authRoutes.js';
 import productSheetRoutes from '../server/routes/productSheetRoutes.js';
 import orderRoutes from '../server/routes/orderRoutes.js';
@@ -25,24 +25,44 @@ const connectDB = async () => {
 
     const uri = process.env.MONGODB_URI;
     if (!uri) {
-        console.error('CRITICAL: MONGODB_URI is missing in production environment');
-        return;
+        throw new Error('MONGODB_URI is missing');
     }
 
     try {
-        await mongoose.connect(uri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        console.log('MongoDB Connected to Atlas');
+        await mongoose.connect(uri);
+        console.log('MongoDB Connected');
     } catch (err) {
         console.error('MongoDB connection error:', err);
         throw err;
     }
 };
 
-// IMPORTANT: Middleware to ensure DB is connected BEFORE routes
+// Health Check / Diagnostic
+app.get('/api/health', async (req, res) => {
+    try {
+        await connectDB();
+        const status = mongoose.connection.readyState;
+        res.json({
+            status: 'ok',
+            database: status === 1 ? 'Connected' : 'Disconnected',
+            env: {
+                hasUri: !!process.env.MONGODB_URI,
+                hasSecret: !!process.env.JWT_SECRET
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ status: 'error', message: err.message });
+    }
+});
+
+// Root API info
+app.get('/api', (req, res) => {
+    res.json({ message: 'OrderProfit API is live' });
+});
+
+// Middleware to ensure DB is connected before handling any other API request
 app.use(async (req, res, next) => {
+    if (req.path === '/api/health' || req.path === '/api') return next();
     try {
         await connectDB();
         next();
@@ -62,26 +82,5 @@ app.use('/api/costs', costRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/insights', insightsRoutes);
 app.use('/api/company', companyRoutes);
-
-// Root API Diagnostic
-app.get('/api', (req, res) => {
-    const status = mongoose.connection.readyState;
-    const states = {
-        0: 'Disconnected',
-        1: 'Connected',
-        2: 'Connecting',
-        3: 'Disconnecting'
-    };
-    res.json({
-        message: 'OrderProfit Live API is running...',
-        database: states[status],
-        envVariables: {
-            MONGODB_URI: process.env.MONGODB_URI ? 'Present (Hidden)' : 'MISSING',
-            JWT_SECRET: process.env.JWT_SECRET ? 'Present' : 'MISSING',
-            NODE_ENV: process.env.NODE_ENV
-        },
-        timestamp: new Date().toISOString()
-    });
-});
 
 export default app;
