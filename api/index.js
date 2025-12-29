@@ -60,6 +60,7 @@ app.get('/api', (req, res) => {
     const status = mongoose.connection.readyState;
     res.json({
         message: 'OrderProfit Live API is running...',
+        versionLabel: 'V2_Bismillah_Traders_Fix',
         database: status === 1 ? 'Connected' : 'Disconnected',
         envVariables: {
             MONGODB_URI: process.env.MONGODB_URI ? 'Present' : 'MISSING',
