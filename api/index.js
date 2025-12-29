@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-// Import routes
+// Import routes directly from the server folder
 import authRoutes from '../server/routes/authRoutes.js';
 import productSheetRoutes from '../server/routes/productSheetRoutes.js';
 import orderRoutes from '../server/routes/orderRoutes.js';
@@ -25,7 +25,8 @@ const connectDB = async () => {
 
     const uri = process.env.MONGODB_URI;
     if (!uri) {
-        throw new Error('MONGODB_URI is missing');
+        console.error('CRITICAL: MONGODB_URI is missing');
+        return;
     }
 
     try {
@@ -33,7 +34,6 @@ const connectDB = async () => {
         console.log('MongoDB Connected');
     } catch (err) {
         console.error('MongoDB connection error:', err);
-        throw err;
     }
 };
 
@@ -57,10 +57,18 @@ app.get('/api/health', async (req, res) => {
 
 // Root API info
 app.get('/api', (req, res) => {
-    res.json({ message: 'OrderProfit API is live' });
+    const status = mongoose.connection.readyState;
+    res.json({
+        message: 'OrderProfit Live API is running...',
+        database: status === 1 ? 'Connected' : 'Disconnected',
+        envVariables: {
+            MONGODB_URI: process.env.MONGODB_URI ? 'Present' : 'MISSING',
+            JWT_SECRET: process.env.JWT_SECRET ? 'Present' : 'MISSING'
+        }
+    });
 });
 
-// Middleware to ensure DB is connected before handling any other API request
+// Middleware to ensure DB is connected before handling requests
 app.use(async (req, res, next) => {
     if (req.path === '/api/health' || req.path === '/api') return next();
     try {
