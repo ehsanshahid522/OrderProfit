@@ -20,20 +20,25 @@ app.use(cors());
 app.use(express.json());
 
 // Database connection function for serverless
+let cachedError = null;
 const connectDB = async () => {
     if (mongoose.connection.readyState >= 1) return;
 
     const uri = process.env.MONGODB_URI;
     if (!uri) {
-        console.error('CRITICAL: MONGODB_URI is missing');
+        cachedError = 'CRITICAL: MONGODB_URI is missing';
+        console.error(cachedError);
         return;
     }
 
     try {
         await mongoose.connect(uri);
         console.log('MongoDB Connected');
+        cachedError = null;
     } catch (err) {
-        console.error('MongoDB connection error:', err);
+        cachedError = `MongoDB connection error: ${err.message}`;
+        console.error(cachedError);
+        throw err;
     }
 };
 
@@ -45,13 +50,18 @@ app.get('/api/health', async (req, res) => {
         res.json({
             status: 'ok',
             database: status === 1 ? 'Connected' : 'Disconnected',
+            connectionError: cachedError,
             env: {
                 hasUri: !!process.env.MONGODB_URI,
                 hasSecret: !!process.env.JWT_SECRET
             }
         });
     } catch (err) {
-        res.status(500).json({ status: 'error', message: err.message });
+        res.status(500).json({
+            status: 'error',
+            message: err.message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
     }
 });
 
