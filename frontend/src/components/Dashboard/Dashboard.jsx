@@ -52,7 +52,6 @@ export function Dashboard() {
                 return isNaN(date.getTime()) ? new Date() : date;
             };
 
-            // 1. Group orders by month to distribute overhead accurately
             const monthOrdersCount = new Map();
             orders?.forEach(o => {
                 const date = getSafeDate(o);

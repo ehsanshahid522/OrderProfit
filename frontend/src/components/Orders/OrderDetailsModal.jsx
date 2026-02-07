@@ -36,7 +36,6 @@ export function OrderDetailsModal({ order, onClose, onUpdate }) {
             console.error('Error loading costs:', error);
         }
     }
-
     // Cost Breakdown Logic (Template & Snapshots)
     let templateCosts = 0;
     let customCostsSnapshot = [];

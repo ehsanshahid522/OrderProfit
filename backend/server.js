@@ -23,13 +23,10 @@ app.use(express.json());
 // Logging Helper
 const logEvent = (msg) => {
     const timestamp = new Date().toISOString();
-    // Only write to file in local dev
-    if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-        try {
-            fs.appendFileSync('db-events.log', `[${timestamp}] ${msg}\n`);
-        } catch (e) {
-            // Silently ignore log errors
-        }
+    try {
+        fs.appendFileSync('db-events.log', `[${timestamp}] ${msg}\n`);
+    } catch (e) {
+        // Silently ignore log errors
     }
     console.log(`[${timestamp}] ${msg}`);
 };
@@ -70,10 +67,7 @@ logEvent('Attempting to connect to MongoDB...');
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/orderprofit')
     .then(() => {
         logEvent('Initial connection successful');
-        // Only listen if not in Vercel environment
-        if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-            app.listen(PORT, () => logEvent(`Server running on port ${PORT}`));
-        }
+        app.listen(PORT, () => logEvent(`Server running on port ${PORT}`));
     })
     .catch((err) => logEvent(`Initial connection failed: ${err.message}`));
 

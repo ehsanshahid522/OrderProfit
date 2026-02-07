@@ -6,7 +6,6 @@ export function CompanyPage() {
     const [employees, setEmployees] = useState([]);
     const [expenses, setExpenses] = useState([]);
     const [loading, setLoading] = useState(true);
-
     const [empForm, setEmpForm] = useState({ name: '', salary: '', designation: '' });
     const [expForm, setExpForm] = useState({ name: '', amount: '', frequency: 'monthly' });
 

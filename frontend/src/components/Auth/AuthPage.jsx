@@ -10,7 +10,7 @@ export function AuthPage() {
         <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 relative overflow-hidden">
             {/* Dynamic Background Elements */}
             <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-200/50 rounded-full blur-3xl animate-float"></div>
-            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-100/50 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-100/50 rounded-full blur-3xl animate-float animation-delay-2000"></div>
 
             <div className="w-full max-w-6xl flex items-center justify-between gap-16 relative z-10">
                 <div className="hidden lg:block flex-1">

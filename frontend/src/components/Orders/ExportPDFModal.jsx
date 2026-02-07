@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { X, Calendar, Download, FileText } from 'lucide-react';
+import { X, Calendar, Download } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 export function ExportPDFModal({ orders, onClose, businessName }) {
     const [dateRange, setDateRange] = useState({
         start: new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0],
-        end: new Date().toISOString().split('T')[0]
+        end: new Date().toISOString().split('T')[0],
     });
 
     const setQuickRange = (type) => {
@@ -23,16 +23,23 @@ export function ExportPDFModal({ orders, onClose, businessName }) {
 
         setDateRange({
             start: start.toISOString().split('T')[0],
-            end: end.toISOString().split('T')[0]
+            end: end.toISOString().split('T')[0],
         });
     };
 
     const handleDownload = () => {
         try {
-            const filteredOrders = orders.filter(order => {
-                const orderDate = new Date(order.orderDate).toISOString().split('T')[0];
-                return orderDate >= dateRange.start && orderDate <= dateRange.end;
-            }).sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+            // Fixed date filter: use timestamps for accurate comparison
+            const startTime = new Date(dateRange.start + 'T00:00:00').getTime();
+            const endTime = new Date(dateRange.end + 'T23:59:59').getTime();
+
+            const filteredOrders = orders
+                .filter(order => {
+                    const orderDate = order.createdAt || order.orderDate;
+                    const orderTime = new Date(orderDate).getTime();
+                    return orderTime >= startTime && orderTime <= endTime;
+                })
+                .sort((a, b) => new Date(b.createdAt || b.orderDate) - new Date(a.createdAt || a.orderDate));
 
             if (filteredOrders.length === 0) {
                 alert('No orders found for the selected date range.');
@@ -51,15 +58,15 @@ export function ExportPDFModal({ orders, onClose, businessName }) {
             doc.setTextColor(100, 116, 139); // slate-500
             doc.text(`Order Sheet: ${dateRange.start} to ${dateRange.end}`, 14, 30);
 
-            // Table Data
+            // Table data
             const tableBody = filteredOrders.map(order => [
-                `#${order.orderNumber}`,
-                new Date(order.orderDate).toLocaleDateString(),
+                `#${order.orderNo || order.orderNumber}`,
+                new Date(order.createdAt || order.orderDate).toLocaleDateString(),
                 order.productName,
-                order.deliveryStatus.toUpperCase(),
-                `Rs. ${Number(order.orderPrice).toLocaleString()}`,
-                `Rs. ${Number(order.totalCosts).toLocaleString()}`,
-                `Rs. ${Number(order.profit).toLocaleString()}`
+                (order.status || order.deliveryStatus || '').toUpperCase(),
+                `Rs. ${Number(order.sellingPrice || order.orderPrice || 0).toLocaleString()}`,
+                `Rs. ${Number(order.totalCosts || order.totalCost || 0).toLocaleString()}`,
+                `Rs. ${Number(order.profit || 0).toLocaleString()}`,
             ]);
 
             autoTable(doc, {
@@ -73,15 +80,15 @@ export function ExportPDFModal({ orders, onClose, businessName }) {
                 columnStyles: {
                     4: { halign: 'right' },
                     5: { halign: 'right' },
-                    6: { halign: 'right' }
-                }
+                    6: { halign: 'right' },
+                },
             });
 
             // Summary
             const finalY = (doc.lastAutoTable?.finalY || 150) + 10;
-            const totalRevenue = filteredOrders.reduce((sum, o) => sum + Number(o.orderPrice), 0);
-            const totalCost = filteredOrders.reduce((sum, o) => sum + Number(o.totalCosts), 0);
-            const totalProfit = filteredOrders.reduce((sum, o) => sum + Number(o.profit), 0);
+            const totalRevenue = filteredOrders.reduce((sum, o) => sum + Number(o.sellingPrice || o.orderPrice || 0), 0);
+            const totalCost = filteredOrders.reduce((sum, o) => sum + Number(o.totalCosts || o.totalCost || 0), 0);
+            const totalProfit = filteredOrders.reduce((sum, o) => sum + Number(o.profit || 0), 0);
 
             doc.setFontSize(11);
             doc.setTextColor(30, 41, 59);

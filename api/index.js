@@ -3,14 +3,14 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 
-// Import routes directly from the server folder
-import authRoutes from '../server/routes/authRoutes.js';
-import productSheetRoutes from '../server/routes/productSheetRoutes.js';
-import orderRoutes from '../server/routes/orderRoutes.js';
-import costRoutes from '../server/routes/costRoutes.js';
-import dashboardRoutes from '../server/routes/dashboardRoutes.js';
-import insightsRoutes from '../server/routes/insightsRoutes.js';
-import companyRoutes from '../server/routes/companyRoutes.js';
+// Import routes directly from the backend folder
+import authRoutes from '../backend/routes/authRoutes.js';
+import productSheetRoutes from '../backend/routes/productSheetRoutes.js';
+import orderRoutes from '../backend/routes/orderRoutes.js';
+import costRoutes from '../backend/routes/costRoutes.js';
+import dashboardRoutes from '../backend/routes/dashboardRoutes.js';
+import insightsRoutes from '../backend/routes/insightsRoutes.js';
+import companyRoutes from '../backend/routes/companyRoutes.js';
 
 dotenv.config();
 
