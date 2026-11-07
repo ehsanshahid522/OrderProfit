@@ -1,50 +1,101 @@
-# OrderProfit AI
+# OrderProfit
 
-True Profit Tracking for E-Commerce Sellers
+An e-commerce operations dashboard for tracking orders, costs and net profit. Built with a React frontend and an Express / MongoDB backend.
 
-## Overview
+[Project demo](https://order-profit.vercel.app/) · [Developer portfolio](https://ehsanshahid.online/)
 
-OrderProfit AI helps e-commerce sellers understand their real profit per order by tracking all costs including advertising, shipping, returns, and platform fees in one place. The application provides automatic profit calculations and AI-powered insights to help you make better business decisions.
+## Purpose
 
-## Features
+Revenue alone does not show what an order earns. OrderProfit brings order information and associated expenses together so sellers can review profit alongside their operating costs.
 
-- **Dashboard**: View key metrics at a glance including today's profit, monthly profit, total orders, and losses
-- **Order Management**: Track all your orders with delivery status and automatic profit calculations
-- **Cost Tracking**: Add and manage multiple cost types per order (advertising, courier, packaging, platform fees, returns, etc.)
-- **Real Profit Calculation**: Automatically calculates net profit using the formula: Revenue - All Costs
-- **AI Insights**: Get personalized business recommendations powered by Google Gemini
+## Application areas
 
-## Getting Started
+- Account registration and authentication.
+- Product sheets and order management.
+- Cost tracking for order-related expenses.
+- Dashboard summaries and profit calculations.
+- Company settings and an insights API.
 
-1. **Sign Up**: Create an account with your business name and email
-2. **Add Orders**: Start adding your orders with product details and prices
-3. **Track Costs**: Add all associated costs for each order
-4. **View Insights**: Monitor your dashboard and generate AI insights
+**Calculation:** Net profit = revenue − recorded costs. Results depend on the costs entered by the user.
 
-## AI Insights Setup (Optional)
+## Technology
 
-To enable AI-powered insights:
+| Layer | Current implementation |
+| --- | --- |
+| Frontend | React 18, JavaScript, Vite, Tailwind CSS |
+| Backend | Node.js, Express |
+| Database | MongoDB with Mongoose |
+| Authentication | JWT and bcrypt |
+| Supporting tools | jsPDF, Lucide React |
+| Deployment | Vercel configuration and an API entry point are included |
 
-1. Get a free Google Gemini API key from: https://makersuite.google.com/app/apikey
-2. Add the API key as an environment variable named `GEMINI_API_KEY` in your Supabase project settings
-3. The AI insights feature will then provide personalized recommendations based on your business data
+## Run locally
 
-Without the API key, the application will still work perfectly for tracking orders and calculating profits.
+### 1. Install dependencies
 
-## Technology Stack
+~~~bash
+git clone https://github.com/ehsanshahid522/OrderProfit.git
+cd OrderProfit
+npm install
+npm install --prefix server
+~~~
 
-- **Frontend**: React, TypeScript, Tailwind CSS
-- **Backend**: Supabase (PostgreSQL + Edge Functions)
-- **Authentication**: Supabase Auth
-- **AI**: Google Gemini API
+Use a Node.js version compatible with the dependencies and have MongoDB available locally or through a hosted connection.
 
-## Security
+### 2. Configure the backend
 
-- All data is protected with Row Level Security (RLS)
-- Users can only access their own orders and costs
-- Authentication is required for all features
-- Secure password handling with Supabase Auth
+Copy `server/.env.example` to `server/.env` and provide your own values.
 
-## Support
+| Variable | Purpose |
+| --- | --- |
+| `PORT` | API port; the server defaults to 5000 |
+| `MONGODB_URI` | Database connection string |
+| `JWT_SECRET` | Authentication signing secret |
+| `NODE_ENV` | Use a development environment for the local server |
 
-For questions or issues, please refer to the application's built-in help or contact support.
+Do not commit real credentials. The local server opens its port after the MongoDB connection succeeds.
+
+### 3. Start the API
+
+From the repository root:
+
+~~~bash
+npm run server
+~~~
+
+This script changes into `server/` and starts the backend with nodemon, so the `server/.env` file is loaded from that directory.
+
+### 4. Start the frontend
+
+In a second terminal, from the repository root:
+
+~~~bash
+npm run dev
+~~~
+
+Open the local URL printed by Vite. Ensure the frontend's API configuration points to your running backend.
+
+### Other scripts
+
+| Command | Purpose |
+| --- | --- |
+| `npm run build` | Create the frontend production build |
+| `npm run preview` | Preview the frontend build locally |
+| `npm run lint` | Run the configured ESLint checks |
+
+## Repository guide
+
+| Location | Contents |
+| --- | --- |
+| `src/` | React application |
+| `public/` | Public frontend assets |
+| `server/routes/` | Authentication, orders, costs, dashboard, insights, company and product-sheet routes |
+| `server/controllers/` | Request handling |
+| `server/models/` | MongoDB models |
+| `server/services/` | Supporting backend services |
+| `server/server.js` | Express setup and MongoDB connection |
+| `api/` and `vercel.json` | Deployment entry point and configuration |
+
+## Contact
+
+[Ehsan Shahid](https://ehsanshahid.online/) · [LinkedIn](https://www.linkedin.com/in/chehsanshahid/) · [Email](mailto:ehsanshahid522@gmail.com)
